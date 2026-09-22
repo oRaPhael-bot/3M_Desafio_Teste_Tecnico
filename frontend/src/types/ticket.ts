@@ -18,6 +18,7 @@ export interface Ticket {
   category: TicketCategory;
   priority: TicketPriority;
   status: TicketStatus;
+  history?: StatusHistory[];
   created_at?: string;
 }
 
