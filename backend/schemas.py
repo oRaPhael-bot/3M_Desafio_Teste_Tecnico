@@ -1,15 +1,16 @@
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel, ConfigDict
 
 
 class TicketStatusHistoryResponse(BaseModel):
   id: int
-  old_status: str
-  new_status: str
+  ticket_id: int
+  old_status: Optional[str] = None
   changed_at: datetime
 
-  model_config = ConfigDict(from_attributes=True)
+  class Config:
+    from_attributes = True
 
 
 class TicketBase(BaseModel):
@@ -17,6 +18,7 @@ class TicketBase(BaseModel):
   description: str
   category: str
   priority: str
+  status: Optional[str] = "Aberto"
 
 
 class TicketCreate(TicketBase):
