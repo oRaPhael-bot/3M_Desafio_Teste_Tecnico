@@ -7,10 +7,11 @@ class TicketStatusHistoryResponse(BaseModel):
   id: int
   ticket_id: int
   old_status: Optional[str] = None
+  new_status: Optional[str] = None
+  evidence: Optional[str] = None
   changed_at: datetime
 
-  class Config:
-    from_attributes = True
+  model_config = ConfigDict(from_attributes=True)
 
 
 class TicketBase(BaseModel):
@@ -25,8 +26,9 @@ class TicketCreate(TicketBase):
   pass
 
 
-class TicketStatusUpdate(BaseModel):
+class StatusUpdate(BaseModel):
   status: str
+  evidence: Optional[str] = None
 
 
 class TicketResponse(TicketBase):

@@ -36,4 +36,5 @@ class TicketStatusHistory(Base):
   new_status = Column(String, nullable=False)
   changed_at = Column(DateTime, default=datetime.utcnow)
 
+  evidence = Column(String, nullable=True)
   ticket = relationship("Ticket", back_populates="history")

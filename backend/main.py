@@ -96,6 +96,7 @@ def update_status(
             ticket_id=ticket.id,
             old_status=old_status,
             new_status=new_status,
+            evidence=status_update.evidence,
             changed_at=datetime.utcnow(),
         )
         db.add(history_entry)
