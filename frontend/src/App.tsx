@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react';
-import type { Ticket, CreateTicketDTO, TicketFilterOptions, TicketStatus } from './types/ticket';
+import type { CreateTicketDTO, Ticket, TicketFilterOptions, TicketStatus } from './types/ticket';
 import { fetchTickets, createTicket, updateTicketStatus, fetchTicketById } from './services/api';
 import { TicketForm } from './components/TicketForm';
 import { TicketList } from './components/TicketList';
 import { TicketDetailModal } from './components/TicketDetailModal';
 
 export default function App() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
-  const [filters, setFilters] = useState<TicketFilterOptions>({ sortBy: 'created_at', order: 'desc' });
-  const [newStatus, setNewStatus] = useState('');
+  const [filters, setFilters] = useState<TicketFilterOptions>({
+    sortBy: 'created_at',
+    order: 'desc',
+  });
   const [loading, setLoading] = useState(true);
-  const [evidence, setEvidence] = useState('');
 
   const loadTickets = async () => {
     try {
@@ -26,33 +26,8 @@ export default function App() {
     }
   };
 
-  const handleOpenModal = (ticket, status) => {
-    setSelectedTicket(ticket);
-    setNewStatus(status);
-    setEvidence('');
-    setIsModalOpen(true);
-  };
-
-  const handleConfirmStatusChange = async () => {
-    if (!selectedTicket) return;
-
-    try {
-      // Aqui você enviará o status (e futuramente a evidência) para a API
-      await updateTicketStatus(selectedTicket.id, {
-        status: newStatus,
-        //Nota: O backend precisará ser atualizado para receber isso depois
-      });
-
-      setIsModalOpen(false);
-      loadTickets(); // Recarrega a lista
-    } catch (error) {
-      console.error("Erro ao atualizar chamado", error);
-      alert("Erro ao atualizar o chamado.");
-    }
-  };
-
   useEffect(() => {
-    loadTickets();
+    void loadTickets();
   }, [filters]);
 
   const handleCreate = async (dto: CreateTicketDTO) => {
@@ -60,8 +35,12 @@ export default function App() {
     await loadTickets();
   };
 
-  const handleStatusChange = async (id: number, newStatus: TicketStatus) => {
-    await updateTicketStatus(id, newStatus);
+  const handleStatusChange = async (
+    id: number,
+    newStatus: TicketStatus,
+    evidence?: string,
+  ) => {
+    await updateTicketStatus(id, { status: newStatus, evidence });
     const updated = await fetchTicketById(id);
     setSelectedTicket(updated);
     await loadTickets();

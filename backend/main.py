@@ -5,11 +5,12 @@ from typing import List, Optional
 
 from starlette.middleware.cors import CORSMiddleware
 
-from database import engine, Base, get_db
+from database import engine, Base, get_db, migrate_schema
 import models
 import schemas
 
 Base.metadata.create_all(bind=engine)
+migrate_schema()
 
 app = FastAPI(title="Ticket Support API")
 

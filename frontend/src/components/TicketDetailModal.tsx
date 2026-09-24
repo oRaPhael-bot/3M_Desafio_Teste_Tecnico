@@ -4,24 +4,34 @@ import type { Ticket, TicketStatus } from '../types/ticket';
 interface TicketDetailModalProps {
   ticket: Ticket;
   onClose: () => void;
-  onStatusChange: (id: number, newStatus: TicketStatus) => Promise<void>;
+  onStatusChange: (id: number, newStatus: TicketStatus, evidence?: string) => Promise<void>;
 }
 
 export function TicketDetailModal({ ticket, onClose, onStatusChange }: TicketDetailModalProps) {
   const [updating, setUpdating] = useState(false);
+  const [pendingStatus, setPendingStatus] = useState<TicketStatus | null>(null);
+  const [evidence, setEvidence] = useState('');
 
-  const handleStatusSelect = async (newStatus: TicketStatus) => {
+  const handleStatusSelect = (newStatus: TicketStatus) => {
     if (newStatus === ticket.status) return;
+    setPendingStatus(newStatus);
+    setEvidence('');
+  };
+
+  const handleConfirm = async () => {
+    if (!pendingStatus) return;
+
     try {
       setUpdating(true);
-      await onStatusChange(ticket.id, newStatus);
+      await onStatusChange(ticket.id, pendingStatus, evidence.trim() || undefined);
+      setPendingStatus(null);
+      setEvidence('');
     } finally {
       setUpdating(false);
     }
   };
 
   const statuses: TicketStatus[] = ['Aberto', 'Em andamento', 'Resolvido', 'Fechado'];
-
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-xl max-w-xl w-full p-6 relative max-h-[90vh] overflow-y-auto">
@@ -67,6 +77,44 @@ export function TicketDetailModal({ ticket, onClose, onStatusChange }: TicketDet
             ))}
           </div>
         </div>
+
+        {pendingStatus && (
+          <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-6">
+            <label htmlFor="status-evidence" className="block text-sm font-medium text-blue-900 mb-2">
+              Evidência da alteração para "{pendingStatus}"
+            </label>
+            <textarea
+              id="status-evidence"
+              value={evidence}
+              onChange={(e) => setEvidence(e.target.value)}
+              rows={3}
+              placeholder="Descreva o que foi feito..."
+              className="w-full border border-blue-200 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              disabled={updating}
+            />
+            <div className="flex justify-end gap-2 mt-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setPendingStatus(null);
+                  setEvidence('');
+                }}
+                disabled={updating}
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold border bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirm}
+                disabled={updating}
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+              >
+                {updating ? 'A atualizar...' : 'Confirmar'}
+              </button>
+            </div>
+          </div>
+        )}
 
         <div>
           <h3 className="text-sm font-medium text-gray-500 mb-2">Histórico de Alterações</h3>
