@@ -32,17 +32,20 @@ export function TicketDetailModal({ ticket, onClose, onStatusChange }: TicketDet
   };
 
   const statuses: TicketStatus[] = ['Aberto', 'Em andamento', 'Resolvido', 'Fechado'];
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-xl max-w-xl w-full p-6 relative max-h-[90vh] overflow-y-auto">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-lg font-bold"
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-lg font-bold cursor-pointer"
         >
           ✕
         </button>
 
-        <h2 className="text-xl font-bold text-gray-900 mb-2">#{ticket.id} - {ticket.title}</h2>
+        <h2 className="text-xl font-bold text-gray-900 mb-2">
+          #{ticket.id} - {ticket.title}
+        </h2>
 
         <div className="flex flex-wrap gap-2 mb-4">
           <span className="px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-semibold rounded-full border">
@@ -66,10 +69,10 @@ export function TicketDetailModal({ ticket, onClose, onStatusChange }: TicketDet
                 key={st}
                 disabled={updating}
                 onClick={() => handleStatusSelect(st)}
-                className={`py-1.5 px-3 rounded-lg text-xs font-semibold border transition ${
+                className={`cursor-pointer select-none py-2 px-3 rounded-lg text-xs font-semibold border transition-all active:scale-[0.98] ${
                   ticket.status === st
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-white text-gray-700 hover:bg-gray-50'
+                    ? 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700'
+                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
                 }`}
               >
                 {st}
@@ -100,7 +103,7 @@ export function TicketDetailModal({ ticket, onClose, onStatusChange }: TicketDet
                   setEvidence('');
                 }}
                 disabled={updating}
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold border bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                className="cursor-pointer select-none px-3 py-2 rounded-lg text-xs font-semibold border border-gray-300 bg-gray-100 text-gray-700 hover:bg-gray-200 active:scale-[0.98] disabled:opacity-50 transition-all"
               >
                 Cancelar
               </button>
@@ -108,7 +111,7 @@ export function TicketDetailModal({ ticket, onClose, onStatusChange }: TicketDet
                 type="button"
                 onClick={handleConfirm}
                 disabled={updating}
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+                className="cursor-pointer select-none px-3 py-2 rounded-lg text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 active:scale-[0.98] disabled:opacity-50 transition-all"
               >
                 {updating ? 'A atualizar...' : 'Confirmar'}
               </button>
@@ -121,7 +124,10 @@ export function TicketDetailModal({ ticket, onClose, onStatusChange }: TicketDet
           {ticket.history && ticket.history.length > 0 ? (
             <div className="space-y-2">
               {ticket.history.map((h) => (
-                <div key={h.id} className="text-xs bg-gray-50 p-2.5 rounded border flex justify-between items-center">
+                <div
+                  key={h.id}
+                  className="text-xs bg-gray-50 p-2.5 rounded border flex justify-between items-center"
+                >
                   <div>
                     <span className="font-semibold text-gray-700">
                       {h.old_status ? `${h.old_status} → ${h.new_status}` : `Criado como ${h.new_status}`}

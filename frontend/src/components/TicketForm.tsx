@@ -3,9 +3,10 @@ import type { CreateTicketDTO, TicketCategory, TicketPriority } from '../types/t
 
 interface TicketFormProps {
   onTicketCreated: (ticket: CreateTicketDTO) => Promise<void>;
+  darkMode?: boolean;
 }
 
-export function TicketForm({ onTicketCreated }: TicketFormProps) {
+export function TicketForm({ onTicketCreated, darkMode = false }: TicketFormProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState<TicketCategory>('TI');
@@ -18,7 +19,13 @@ export function TicketForm({ onTicketCreated }: TicketFormProps) {
 
     try {
       setSubmitting(true);
-      await onTicketCreated({ title, description, category, priority, status: 'Aberto' });
+      await onTicketCreated({
+        title,
+        description,
+        category,
+        priority,
+        status: 'Aberto',
+      });
       setTitle('');
       setDescription('');
       setCategory('TI');
@@ -29,41 +36,68 @@ export function TicketForm({ onTicketCreated }: TicketFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-8">
-      <h2 className="text-xl font-bold mb-4 text-gray-800">Novo Chamado</h2>
+    <form
+      onSubmit={handleSubmit}
+      className={`p-6 rounded-xl shadow-sm border mb-8 ${
+        darkMode
+          ? 'bg-slate-800 border-slate-700'
+          : 'bg-white border-gray-200'
+      }`}
+    >
+      <h2 className={`text-xl font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+        Novo Chamado
+      </h2>
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Título</label>
+          <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-slate-200' : 'text-gray-700'}`}>
+            Título
+          </label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Ex: Impressora do RH desconectada"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none ${
+              darkMode
+                ? 'bg-slate-700 border-slate-600 text-white placeholder:text-slate-400'
+                : 'bg-white border-gray-300 text-gray-900'
+            }`}
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Descrição</label>
+          <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-slate-200' : 'text-gray-700'}`}>
+            Descrição
+          </label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={3}
             placeholder="Descreva o problema com detalhes..."
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none ${
+              darkMode
+                ? 'bg-slate-700 border-slate-600 text-white placeholder:text-slate-400'
+                : 'bg-white border-gray-300 text-gray-900'
+            }`}
             required
           />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Categoria</label>
+            <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-slate-200' : 'text-gray-700'}`}>
+              Categoria
+            </label>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value as TicketCategory)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none ${
+                darkMode
+                  ? 'bg-slate-700 border-slate-600 text-white'
+                  : 'bg-white border-gray-300 text-gray-900'
+              }`}
             >
               <option value="TI">TI</option>
               <option value="Instalações">Instalações</option>
@@ -72,11 +106,17 @@ export function TicketForm({ onTicketCreated }: TicketFormProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Prioridade</label>
+            <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-slate-200' : 'text-gray-700'}`}>
+              Prioridade
+            </label>
             <select
               value={priority}
               onChange={(e) => setPriority(e.target.value as TicketPriority)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none ${
+                darkMode
+                  ? 'bg-slate-700 border-slate-600 text-white'
+                  : 'bg-white border-gray-300 text-gray-900'
+              }`}
             >
               <option value="Baixa">Baixa</option>
               <option value="Média">Média</option>
