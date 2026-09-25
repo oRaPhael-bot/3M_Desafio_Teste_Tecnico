@@ -5,9 +5,16 @@ interface TicketListProps {
   filters: TicketFilterOptions;
   onFilterChange: (filters: TicketFilterOptions) => void;
   onSelectTicket: (ticket: Ticket) => void;
+  onRefresh?: () => void;
 }
 
-export function TicketList({ tickets, filters, onFilterChange, onSelectTicket }: TicketListProps) {
+export function TicketList({
+  tickets,
+  filters,
+  onFilterChange,
+  onSelectTicket,
+  onRefresh,
+}: TicketListProps) {
   const getStatusBadge = (status: Ticket['status']) => {
     switch (status) {
       case 'Aberto':
@@ -23,17 +30,28 @@ export function TicketList({ tickets, filters, onFilterChange, onSelectTicket }:
     }
   };
 
+  const handleSortChange = (value: string) => {
+    const [sortBy, order] = value.split(':');
+
+    onFilterChange({
+      ...filters,
+      sortBy: sortBy as 'created_at' | 'priority',
+      order: order as 'asc' | 'desc',
+    });
+  };
+
+  const sortValue = `${filters.sortBy ?? 'created_at'}:${filters.order ?? 'desc'}`;
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <h2 className="text-xl font-bold text-gray-800">Chamados Registados</h2>
 
-        {/* Filtros */}
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <select
             value={filters.status || ''}
             onChange={(e) => onFilterChange({ ...filters, status: e.target.value || undefined })}
-            className="text-xs p-2 border rounded-lg bg-gray-50 focus:outline-none"
+            className="text-[11px] p-1.5 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none"
           >
             <option value="">Todos os Status</option>
             <option value="Aberto">Aberto</option>
@@ -45,7 +63,7 @@ export function TicketList({ tickets, filters, onFilterChange, onSelectTicket }:
           <select
             value={filters.category || ''}
             onChange={(e) => onFilterChange({ ...filters, category: e.target.value || undefined })}
-            className="text-xs p-2 border rounded-lg bg-gray-50 focus:outline-none"
+            className="text-[11px] p-1.5 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none"
           >
             <option value="">Todas as Categorias</option>
             <option value="TI">TI</option>
@@ -54,13 +72,23 @@ export function TicketList({ tickets, filters, onFilterChange, onSelectTicket }:
           </select>
 
           <select
-            value={filters.sortBy || 'created_at'}
-            onChange={(e) => onFilterChange({ ...filters, sortBy: e.target.value as any })}
-            className="text-xs p-2 border rounded-lg bg-gray-50 focus:outline-none"
+            value={sortValue}
+            onChange={(e) => handleSortChange(e.target.value)}
+            className="text-[11px] p-1.5 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none"
           >
-            <option value="created_at">Ordenar por Data</option>
-            <option value="priority">Ordenar por Prioridade</option>
+            <option value="created_at:desc">Mais recentes</option>
+            <option value="created_at:asc">Mais antigos</option>
+            <option value="priority:desc">Prioridade ↑</option>
+            <option value="priority:asc">Prioridade ↓</option>
           </select>
+
+          <button
+            type="button"
+            onClick={() => onRefresh?.()}
+            className="cursor-pointer select-none px-2.5 py-1.5 bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white rounded-lg text-[11px] font-medium transition-all shadow-sm hover:shadow-md"
+          >
+            Atualizar
+          </button>
         </div>
       </div>
 
@@ -91,7 +119,9 @@ export function TicketList({ tickets, filters, onFilterChange, onSelectTicket }:
                 <span className="text-xs px-2 py-0.5 bg-gray-100 rounded text-gray-600">
                   {ticket.priority}
                 </span>
-                <span className={`text-xs px-2.5 py-1 rounded-full font-semibold border ${getStatusBadge(ticket.status)}`}>
+                <span
+                  className={`text-xs px-2.5 py-1 rounded-full font-semibold border ${getStatusBadge(ticket.status)}`}
+                >
                   {ticket.status}
                 </span>
               </div>

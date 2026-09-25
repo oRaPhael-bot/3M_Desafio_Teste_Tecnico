@@ -19,8 +19,8 @@ export default function App() {
       setLoading(true);
       const data = await fetchTickets(filters);
       setTickets(data);
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -47,23 +47,30 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-10 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gray-100 text-gray-900 transition-colors duration-200">
+      <div className="max-w-5xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
         <header className="mb-8">
-          <h1 className="text-3xl font-extrabold text-gray-900">Portal de Tickets de Suporte</h1>
-          <p className="text-gray-500 text-sm mt-1">Gestão interna de solicitações e infraestrutura</p>
+          <h1 className="text-3xl font-extrabold text-gray-900">
+            Portal de Tickets de Suporte
+          </h1>
+          <p className="text-gray-500 text-sm mt-1">
+            Gestão interna de solicitações e infraestrutura
+          </p>
         </header>
 
         <TicketForm onTicketCreated={handleCreate} />
 
-        {loading ? (
-          <div className="text-center py-10 text-gray-500">A carregar chamados...</div>
+        {loading && tickets.length === 0 ? (
+          <div className="text-center py-10 text-gray-500">
+            A carregar chamados...
+          </div>
         ) : (
           <TicketList
             tickets={tickets}
             filters={filters}
             onFilterChange={setFilters}
             onSelectTicket={setSelectedTicket}
+            onRefresh={loadTickets}
           />
         )}
 

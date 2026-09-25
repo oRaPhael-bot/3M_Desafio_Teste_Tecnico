@@ -6,6 +6,7 @@ function buildTicketQuery(filters?: TicketFilterOptions) {
   if (!filters) return '';
 
   const params = new URLSearchParams();
+
   if (filters.status) params.set('status', filters.status);
   if (filters.category) params.set('category', filters.category);
   if (filters.priority) params.set('priority', filters.priority);
@@ -17,7 +18,7 @@ function buildTicketQuery(filters?: TicketFilterOptions) {
 }
 
 export async function fetchTickets(filters?: TicketFilterOptions): Promise<Ticket[]> {
-  const response = await fetch(`${API_BASE_URL}/tickets/${buildTicketQuery(filters)}`);
+  const response = await fetch(`${API_BASE_URL}/tickets${buildTicketQuery(filters)}`);
   if (!response.ok) {
     throw new Error('Falha ao carregar a lista de chamados.');
   }
@@ -32,9 +33,11 @@ export async function createTicket(data: CreateTicketDTO): Promise<Ticket> {
     },
     body: JSON.stringify(data),
   });
+
   if (!response.ok) {
     throw new Error('Falha ao criar o chamado.');
   }
+
   return response.json();
 }
 
@@ -46,11 +49,11 @@ export async function fetchTicketById(id: number): Promise<Ticket> {
   return response.json();
 }
 
-export const updateTicketStatus = async (
+export async function updateTicketStatus(
   id: number,
   updateData: { status: string; evidence?: string }
-) => {
-  const response = await fetch(`http://localhost:8000/tickets/${id}/status`, {
+) {
+  const response = await fetch(`${API_BASE_URL}/tickets/${id}/status`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -63,4 +66,4 @@ export const updateTicketStatus = async (
   }
 
   return response.json();
-};
+}

@@ -2,13 +2,13 @@ export type TicketCategory = 'TI' | 'Instalações' | 'RH';
 export type TicketPriority = 'Baixa' | 'Média' | 'Alta' | 'Urgente';
 export type TicketStatus = 'Aberto' | 'Em andamento' | 'Resolvido' | 'Fechado';
 
-
 export interface StatusHistory {
   id: number;
   ticket_id: number;
   old_status: TicketStatus | null;
   new_status: TicketStatus;
   changed_at: string;
+  evidence?: string | null;
 }
 
 export interface Ticket {
@@ -20,9 +20,10 @@ export interface Ticket {
   status: TicketStatus;
   history?: StatusHistory[];
   created_at?: string;
+  updated_at?: string;
 }
 
-export type CreateTicketDTO = Omit<Ticket, 'id' | 'created_at'>;
+export type CreateTicketDTO = Omit<Ticket, 'id' | 'created_at' | 'updated_at' | 'history'>;
 
 export interface TicketFilterOptions {
   status?: string;
